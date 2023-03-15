@@ -13,6 +13,7 @@ homePageUrl: https://github.com/notadoctor99/metroplugin
 supportPageUrl: https://github.com/notadoctor99/metroplugin/issues
 
 pluginFileName: MetroPlugin.dll
+pluginFolderWin: .
 
 supportedDevices:
     - LoupedeckCtFamily
