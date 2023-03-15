@@ -1,0 +1,25 @@
+type: plugin4
+name: Metro
+displayName: Windows Store Applications
+description: Easily launch Windows Store applications like Calculator, Notepad, Netflix, Skype or Affinity Photo that otherwise are not possible to start with Loupedeck built-in "Open Application" command.
+version: 1.0
+
+author: NotADoctor99
+copyright: Copyright © 2023 NotADoctor99. All rights reserved.
+license: MIT
+licenseUrl: https://opensource.org/licenses/MIT
+
+homePageUrl: https://github.com/notadoctor99/metroplugin
+supportPageUrl: https://github.com/notadoctor99/metroplugin/issues
+
+pluginFileName: MetroPlugin.dll
+
+supportedDevices:
+    - LoupedeckCtFamily
+    - LoupedeckPlusFamily
+
+pluginCapabilities:
+    #- HasApplication
+    #- ActivatesApplication
+
+minimumLoupedeckVersion: 5.6
