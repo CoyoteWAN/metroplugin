@@ -21,7 +21,7 @@ namespace NotADoctor99.MetroPlugin
 
             foreach (var application in this._metroPackageManager.Applications)
             {
-                this.AddParameter(application.FullName, application.DisplayName, this.GroupName).Description = $"Launches {application.DisplayName}";
+                this.AddParameter(application.Id, application.DisplayName, this.GroupName).Description = $"Launches {application.DisplayName}";
             }
         }
 
@@ -31,8 +31,8 @@ namespace NotADoctor99.MetroPlugin
 
             foreach (var application in this._metroPackageManager.Applications)
             {
-                this.AddParameter(application.FullName, application.DisplayName, this.GroupName).Description = $"Launches {application.DisplayName}";
-                application.WriteLogoToPngFile(this.GetIconFilePath(application.FullName));
+                this.AddParameter(application.Id, application.DisplayName, this.GroupName).Description = $"Launches {application.DisplayName}";
+                application.WriteLogoToPngFile(this.GetIconFilePath(application.Id));
             }
 
             return true;

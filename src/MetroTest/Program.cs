@@ -2,8 +2,9 @@
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
 
-    class Program
+     class Program
     {
         static void Main(String[] _)
         {
@@ -17,8 +18,11 @@
 
             foreach (var app in metroPackageManager.Applications)
             {
-                Console.WriteLine($"{app.DisplayName} | {app.FullName}");
-                app.WriteLogoToPngFile($@"C:\temp\_metro\{app.DisplayName}.png");
+                Console.WriteLine($"{app.DisplayName} | {app.DisplayName}");
+                var temporaryDirectory = @"C:\temp\_metro\";
+                var fileName = $"{app.DisplayName}.png".Replace(':', '_');
+                Directory.CreateDirectory(temporaryDirectory);
+                app.WriteLogoToPngFile($@"C:\temp\_metro\{fileName}");
             }
         }
     }

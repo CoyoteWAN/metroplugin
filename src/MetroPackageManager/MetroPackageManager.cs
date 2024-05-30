@@ -4,21 +4,23 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Security.Principal;
     using System.Windows.Media.Imaging;
 
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Core;
+    using Windows.Foundation;
     using Windows.Management.Deployment;
-
+    
     public class MetroPackageManager
     {
         private readonly Dictionary<String, MetroPackage> _packages = new Dictionary<String, MetroPackage>();
-        private readonly Dictionary<String, MetroApplication> _applications = new Dictionary<String, MetroApplication>();
+        private readonly Dictionary<String, MetroApplicationNoAppInfo> _applications = new Dictionary<String, MetroApplicationNoAppInfo>();
 
         public IReadOnlyCollection<MetroPackage> Packages => this._packages.Values;
 
-        public IReadOnlyCollection<MetroApplication> Applications => this._applications.Values;
+        public IReadOnlyCollection<MetroApplicationNoAppInfo> Applications => this._applications.Values;
 
         public Boolean ReadPackagesForCurrentUser()
         {
@@ -58,35 +60,31 @@
 
         private void ReadMetroPackage(Package package)
         {
-            try
+            var entries = package.GetAppListEntries();
+
+            if (0 == entries.Count)
             {
-                var entries = package.GetAppListEntries();
-
-                if (0 == entries.Count)
-                {
-                    return;
-                }
-
-                var metroPackage = new MetroPackage(package.Id.Name, package.Id.FullName, package.DisplayName, package.Description,
-                    new Version(package.Id.Version.Major, package.Id.Version.Minor, package.Id.Version.Build, package.Id.Version.Revision),
-                    package.Id.FamilyName, package.PublisherDisplayName, package.InstalledPath, package.InstalledDate, package.Logo.LocalPath);
-
-                foreach (var entry in entries)
-                {
-                    var metroApplication = this.ReadMetroApplication(entry);
-                    this._applications[metroApplication.FullName] = metroApplication;
-                    metroPackage.AddApplication(metroApplication);
-                }
-
-                this._packages[metroPackage.FullName] = metroPackage;
+                return;
             }
-            catch (Exception ex)
+
+            Console.WriteLine("Valid Metro Package: " + package.DisplayName);
+
+            var metroPackage = new MetroPackage(package.Id.Name, package.Id.FullName, package.DisplayName, package.Description,
+                new Version(package.Id.Version.Major, package.Id.Version.Minor, package.Id.Version.Build, package.Id.Version.Revision),
+                package.Id.FamilyName, package.PublisherDisplayName, package.InstalledPath, package.InstalledDate, package.Logo.LocalPath);
+
+            foreach (var entry in entries)
             {
-                Trace.TraceError(ex.Message);
+                var name = entry.DisplayInfo.DisplayName;
+                var metroApplication = this.ReadMetroApplication(entry);
+                this._applications[metroApplication.DisplayName] = metroApplication;
+                metroPackage.AddApplication(metroApplication);
             }
+
+            this._packages[metroPackage.FullName] = metroPackage;
         }
 
-        private MetroApplication ReadMetroApplication(AppListEntry entry)
+        private MetroApplicationNoAppInfo ReadMetroApplication(AppListEntry entry)
         {
             var streamReference = entry.DisplayInfo.GetLogo(new Windows.Foundation.Size(80, 80));
 
@@ -104,7 +102,8 @@
                 }
             }
 
-            var metroApplication = new MetroApplication(entry.AppInfo.Id, entry.AppUserModelId, entry.DisplayInfo.DisplayName, entry.DisplayInfo.Description, logoBitmapImage, entry.AppInfo.Package.Id.FullName);
+            //var metroApplicationTest = new MetroApplication(entry.AppInfo.Id, entry.AppUserModelId, entry.DisplayInfo.DisplayName, entry.DisplayInfo.Description, logoBitmapImage, entry.AppInfo.Package.Id.FullName);
+            var metroApplication = new MetroApplicationNoAppInfo(entry.AppUserModelId, entry.DisplayInfo.DisplayName, entry.DisplayInfo.Description, logoBitmapImage);
 
             return metroApplication;
         }
@@ -114,7 +113,7 @@
             try
             {
                 var commandLine = $@"shell:AppsFolder\{applicationFullName}";
-                Process.Start(commandLine);
+                Process.Start("explorer.exe", commandLine);
                 return true;
             }
             catch (Exception ex)

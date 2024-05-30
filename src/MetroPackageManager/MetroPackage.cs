@@ -6,6 +6,7 @@
     public class MetroPackage
     {
         private readonly List<MetroApplication> _applications = new List<MetroApplication>();
+        private readonly List<MetroApplicationNoAppInfo> _applications_noinfo = new List<MetroApplicationNoAppInfo>();
 
         public String Name { get; }
 
@@ -44,5 +45,7 @@
         }
 
         internal void AddApplication(MetroApplication application) => this._applications.Add(application);
+
+        internal void AddApplication(MetroApplicationNoAppInfo application) => this._applications_noinfo.Add(application);
     }
 }
